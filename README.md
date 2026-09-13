@@ -1,55 +1,113 @@
 # Farming Simulator 25 Pterodactyl Egg
 
-A GitHub-hosted Pterodactyl egg and GHCR Docker image for running the Windows Farming Simulator 25 dedicated server under Wine with a browser-based noVNC desktop.
+A Pterodactyl egg and Docker image for hosting the **Farming Simulator 25 dedicated server** on Linux using Wine.
 
-This repository does **not** include Farming Simulator 25, DLC, product keys, or dedicated-server licenses. Supply legally obtained files from your GIANTS account.
+The container also includes a browser-accessible **noVNC desktop** for installation, activation, and maintenance.
 
-## Automatic GitHub setup
+> [!IMPORTANT]
+> This repository does **not** contain Farming Simulator 25, DLC, product keys, licenses, or other proprietary GIANTS Software files.
+>
+> You must provide legally obtained installation files and a valid dedicated-server license.
 
-Every push to `main` runs GitHub Actions. The workflow:
+---
 
-1. Builds the Docker image in `docker/`.
-2. Publishes it to `ghcr.io/OWNER/REPOSITORY:latest`.
-3. Generates `egg-farming-simulator-25.json` with that exact image address.
-4. Commits the generated egg JSON back to the repository.
+## Features
 
-The egg therefore works whether this repository is under a personal account or an organization.
+* Farming Simulator 25 dedicated server support
+* Runs the Windows server through Wine
+* Browser-based noVNC desktop
+* FS25 web administration support
+* Automatic Docker image builds through GitHub Actions
+* Automatic publishing to GitHub Container Registry
+* Automatically generated Pterodactyl egg
+* Works from either a personal GitHub account or GitHub organization
 
-## Create the repository
+---
 
-1. Create a new **public** GitHub repository named `fs25-pterodactyl`.
-2. Upload every file and folder from this package to the repository root.
-3. Make sure the default branch is named `main`.
-4. Open the repository's **Actions** tab and run **Build FS25 Pterodactyl image**, or make a small commit to trigger it.
-5. Wait for the workflow to finish successfully.
+## Automatic GitHub Builds
 
-The workflow uses GitHub's built-in `GITHUB_TOKEN`; no personal access token or repository secret is required.
+Every push to the `main` branch runs the included GitHub Actions workflow.
 
-## Make the GHCR image public
+The workflow automatically:
 
-After the first successful workflow:
+1. Builds the Docker image from `docker/`
+2. Publishes the image to GitHub Container Registry
+3. Generates `egg-farming-simulator-25.json`
+4. Inserts the correct GHCR image address into the egg
+5. Commits the generated egg back to the repository
 
-1. Open the repository's package from the **Packages** section.
-2. Open **Package settings**.
-3. Change the package visibility to **Public**.
+The published image follows this format:
 
-Public GHCR images can be pulled by Pterodactyl Wings without registry credentials.
+```text
+ghcr.io/OWNER/REPOSITORY:latest
+```
 
-## Download the egg from GitHub
+Because the repository owner and name are detected automatically, the project can be hosted under either a personal account or an organization without manually editing the egg image URL.
 
-The generated file is available at:
+---
+
+## Repository Setup
+
+### 1. Create the repository
+
+Create a new public GitHub repository.
+
+Recommended name:
+
+```text
+fs25-pterodactyl
+```
+
+Upload all files and folders from this project into the repository root.
+
+Make sure the default branch is:
+
+```text
+main
+```
+
+### 2. Run the build workflow
+
+Open:
+
+**GitHub Repository → Actions → Build FS25 Pterodactyl Image**
+
+Run the workflow manually, or push a commit to `main`.
+
+GitHub's built-in `GITHUB_TOKEN` is used automatically.
+
+No personal access token or additional repository secret is required.
+
+---
+
+## Make the Container Image Public
+
+After the first successful workflow run:
+
+1. Open the repository on GitHub
+2. Open the published package under **Packages**
+3. Open **Package settings**
+4. Change the package visibility to **Public**
+
+Pterodactyl Wings can pull public GHCR images without registry credentials.
+
+---
+
+## Download the Pterodactyl Egg
+
+The generated egg is available directly from GitHub:
 
 ```text
 https://raw.githubusercontent.com/OWNER/REPOSITORY/main/egg-farming-simulator-25.json
 ```
 
-Example for `OfficialUnrealNetwork/fs25-pterodactyl`:
+For the Unreal Networks repository:
 
 ```text
 https://raw.githubusercontent.com/OfficialUnrealNetwork/fs25-pterodactyl/main/egg-farming-simulator-25.json
 ```
 
-Pterodactyl normally imports an egg from a local JSON file. Download the raw file first:
+Download it with:
 
 ```bash
 curl -L \
@@ -57,41 +115,150 @@ curl -L \
   -o egg-farming-simulator-25.json
 ```
 
-Then import it from **Admin Panel → Nests → Import Egg**.
+Then import it through:
+
+**Pterodactyl Admin Panel → Nests → Import Egg**
+
+---
+
+## Required Allocations
+
+Configure the following ports for the Pterodactyl server:
+
+| Port    | Protocol  | Purpose                                  |
+| ------- | --------- | ---------------------------------------- |
+| `10823` | TCP / UDP | FS25 game traffic and primary allocation |
+| `6080`  | TCP       | Browser-based noVNC desktop              |
+| `7999`  | TCP       | Farming Simulator web administration     |
+| `5900`  | TCP       | Optional direct VNC access               |
+
+Make `10823` the primary Pterodactyl allocation.
+
+---
+
+## First-Time Installation
+
+Create the Pterodactyl server with:
+
+```text
+AUTO_INSTALL=true
+AUTOSTART_SERVER=false
+```
+
+Then:
+
+1. Upload the GIANTS Farming Simulator 25 Windows ESD installer to:
+
+```text
+/home/container/installer
+```
+
+2. Start the Pterodactyl server.
+
+3. Open the noVNC desktop:
+
+```text
+http://NODE-IP:6080/vnc.html?resize=remote&autoconnect=1
+```
+
+4. Complete the Farming Simulator 25 installation.
+
+5. Activate the dedicated-server license.
+
+6. Set:
+
+```text
+AUTOSTART_SERVER=true
+```
+
+7. Restart the Pterodactyl server.
+
+8. Access the FS25 web administration interface on:
+
+```text
+http://NODE-IP:7999
+```
+
+---
 
 ## Updating
 
-Edit the Docker or egg template files and push the change to `main`. GitHub Actions rebuilds and republishes `:latest`. Wings will pull the image when Pterodactyl requests an image pull or when a server is recreated. Restarting a server alone may continue using the locally cached image.
+To update the Docker image or egg:
 
-## Required Pterodactyl allocations
+1. Modify the Docker, startup, or egg template files.
+2. Commit the changes.
+3. Push them to `main`.
 
-| Port | Protocol | Purpose |
-|---|---|---|
-| `10823` | TCP and UDP | FS25 game traffic and primary allocation |
-| `6080` | TCP | Browser noVNC desktop |
-| `7999` | TCP | FS25 web administration |
-| `5900` | TCP | Optional direct VNC |
+GitHub Actions will automatically rebuild and publish:
 
-## First installation
+```text
+ghcr.io/OWNER/REPOSITORY:latest
+```
 
-1. Create the Pterodactyl server with `AUTO_INSTALL=true` and `AUTOSTART_SERVER=false`.
-2. Upload the GIANTS Windows ESD image to `/home/container/installer`.
-3. Start the server.
-4. Open `http://NODE-IP:6080/vnc.html?resize=remote&autoconnect=1`.
-5. Complete installation and dedicated-server license activation.
-6. Set `AUTOSTART_SERVER=true` and restart.
-7. Use port `7999` for the Farming Simulator web administration page.
+and regenerate the Pterodactyl egg.
 
-## Files
+### Pterodactyl Image Cache
 
-- `egg-farming-simulator-25.json` — generated importable egg.
-- `egg/egg-farming-simulator-25.template.json` — source egg template.
-- `docker/Dockerfile` — FS25 Wine/noVNC Pterodactyl image.
-- `docker/ptero-entrypoint.sh` — container entrypoint.
-- `docker/ptero-start.sh` — FS25 startup wrapper.
-- `.github/workflows/build-image.yml` — builds and publishes the GHCR image.
-- `scripts/render-egg.py` — safely inserts the GHCR image into the egg.
+Restarting an existing server may continue using a locally cached Docker image.
 
-## Important limitation
+To ensure Wings uses the latest image, request an image pull through Pterodactyl or recreate the server/container when appropriate.
 
-GitHub hosts the repository and Docker image. The licensed FS25 installer and activated server files remain in the Pterodactyl server volume; they must not be placed in a public GitHub repository or public container image.
+---
+
+## Project Structure
+
+```text
+.
+├── .github/
+│   └── workflows/
+│       └── build-image.yml
+│
+├── docker/
+│   ├── Dockerfile
+│   ├── ptero-entrypoint.sh
+│   └── ptero-start.sh
+│
+├── egg/
+│   └── egg-farming-simulator-25.template.json
+│
+├── scripts/
+│   └── render-egg.py
+│
+└── egg-farming-simulator-25.json
+```
+
+### Files
+
+| File                                         | Description                                         |
+| -------------------------------------------- | --------------------------------------------------- |
+| `egg-farming-simulator-25.json`              | Generated Pterodactyl egg ready for import          |
+| `egg/egg-farming-simulator-25.template.json` | Source egg template                                 |
+| `docker/Dockerfile`                          | Wine and noVNC container image                      |
+| `docker/ptero-entrypoint.sh`                 | Container initialization and entrypoint             |
+| `docker/ptero-start.sh`                      | Farming Simulator server startup wrapper            |
+| `.github/workflows/build-image.yml`          | GitHub Actions build and publish workflow           |
+| `scripts/render-egg.py`                      | Generates the final egg with the correct GHCR image |
+
+---
+
+## Licensing and Game Files
+
+GitHub is only used to host:
+
+* The Pterodactyl egg
+* Docker configuration
+* Startup scripts
+* Supporting project files
+* The generated container image
+
+Licensed Farming Simulator 25 files must remain inside the Pterodactyl server's persistent storage.
+
+Do **not** upload the FS25 installer, activated server files, product keys, DLC, or other proprietary GIANTS Software content to this repository or any public container image.
+
+---
+
+## Disclaimer
+
+This project is an unofficial community project and is not affiliated with, endorsed by, or supported by GIANTS Software.
+
+Farming Simulator and related trademarks are property of their respective owners.
