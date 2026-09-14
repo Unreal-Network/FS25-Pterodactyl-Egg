@@ -1,7 +1,7 @@
 # Farming Simulator 25 Pterodactyl Egg
 
 <p align="center">
-  <img src="https://i.imgur.com/tbPDh76.png" alt="GitHub Profile Header Generator Banner" width="100%">
+  <img src="https://i.imgur.com/OBRgCqw.png" alt="GitHub Profile Header Generator Banner" width="100%">
 </p>
 
 A Pterodactyl egg and Docker image for hosting the **Farming Simulator 25 dedicated server** on Linux using Wine.
