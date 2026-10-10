@@ -52,18 +52,13 @@ A Pterodactyl egg and Docker image for running the **Farming Simulator 25 dedica
 
 ## Quick start
 
-1. **Download the egg** from this repository:
+1. **Download the egg.** Open the [latest release](https://github.com/Unreal-Network/FS25-Pterodactyl-Egg/releases/latest) and download [`egg-farming-simulator-25.json`](https://github.com/Unreal-Network/FS25-Pterodactyl-Egg/releases/latest/download/egg-farming-simulator-25.json) from its assets.
 
-   ```bash
-   curl -L -o egg-farming-simulator-25.json \
-     https://raw.githubusercontent.com/Unreal-Network/FS25-Pterodactyl-Egg/main/egg-farming-simulator-25.json
-   ```
+2. **Import it.** In the Pterodactyl admin area, open **Nests**. Click **Import Egg**, choose the downloaded file, pick the nest it should go in (create one first, for example "Farming Simulator", if you want it separate) and click **Import**.
 
-2. **Import it.** In the Pterodactyl admin area go to **Nests**, choose a nest (or create one, for example "Farming Simulator"), click **Import Egg** and select the file.
+3. **Add the allocations.** In the admin area, open **Nodes**, select your node and go to its **Allocation** tab. Add `10823`, `6080` and `7999` (and `5900` if you want direct VNC) on the IP you will use.
 
-3. **Add the allocations** to your node: `10823`, `6080` and `7999` (and `5900` if you want direct VNC) on the IP you will use.
-
-4. **Create the server** with the *Farming Simulator 25 Wine noVNC* egg:
+4. **Create the server.** Open **Servers**, click **Create New** and choose the *Farming Simulator 25 Wine noVNC* egg:
    - Primary allocation: `10823`.
    - Additional allocations: `6080` and `7999` (and `5900` if wanted).
    - Give it plenty of disk and memory (see [Requirements](#requirements)).
@@ -141,15 +136,15 @@ The game port comes from the server's primary allocation, so you don't set it he
 
 ## Updating
 
-**Server image.** The egg uses `ghcr.io/officialunrealnetwork/fs25-pterodactyl:latest`. If a server is still running an older build after an update, pull the image on the node and restart the server:
+**Egg.** Download `egg-farming-simulator-25.json` from the [latest release](https://github.com/Unreal-Network/FS25-Pterodactyl-Egg/releases/latest). In the admin area open **Nests**, select the nest, open the Farming Simulator 25 egg and use **Update Egg** to upload the new file. Existing servers keep their files and settings.
+
+**Server image.** The egg uses `ghcr.io/officialunrealnetwork/fs25-pterodactyl:latest`. Wings normally fetches the newest image when a server starts, so a restart from the panel is usually enough. If a server keeps running an older build, the panel has no button to force a fresh download, so run this once on the node and then restart the server:
 
 ```bash
 docker pull ghcr.io/officialunrealnetwork/fs25-pterodactyl:latest
 ```
 
 Your game files, saves and settings stay in the server volume.
-
-**Egg.** Download the latest `egg-farming-simulator-25.json` and import it again over the existing egg in the panel.
 
 ## Troubleshooting
 
@@ -187,6 +182,8 @@ Every push to `main` (except changes to the README or the generated egg) runs th
 1. Builds the image from `docker/` and publishes it to `ghcr.io/<owner>/<repository>:latest`.
 2. Renders `egg/egg-farming-simulator-25.template.json` into `egg-farming-simulator-25.json` with that image address, using `scripts/render-egg.py`.
 3. Commits the updated egg back to the repository.
+
+To ship a new egg to users, publish a new GitHub release with that `egg-farming-simulator-25.json` attached as an asset.
 
 No extra secrets are needed; the built-in `GITHUB_TOKEN` is used. GitHub publishes new packages as private, so after the first build open the package's settings on GitHub and set its visibility to **Public**, or Wings won't be able to pull it.
 
