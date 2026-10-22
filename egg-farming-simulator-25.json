@@ -10,7 +10,7 @@
     "description": "Runs the Windows Farming Simulator 25 dedicated server under Wine. Includes a browser-based noVNC desktop for the required GIANTS license activation. Requires the companion fs25-pterodactyl Docker image and legally obtained GIANTS ESD installer/server license; no paid game files are included.",
     "features": [],
     "docker_images": {
-        "FS25 Wine noVNC": "ghcr.io/officialunrealnetwork/fs25-pterodactyl:latest"
+        "FS25 Wine noVNC": "ghcr.io/unreal-network/fs25-pterodactyl-egg:latest"
     },
     "file_denylist": [],
     "startup": "bash /usr/local/bin/ptero-start.sh",
